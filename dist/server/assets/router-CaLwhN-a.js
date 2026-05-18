@@ -1,7 +1,34 @@
 import { createRootRoute, Link, Outlet, HeadContent, Scripts, useLocation, createFileRoute, redirect, createRouter } from "@tanstack/react-router";
-import { jsxs, jsx, Fragment } from "react/jsx-runtime";
+import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import { Menu, Globe, X, Shield, Zap, Wifi, BookOpen, Lock, Server, Gauge, Eye, ChevronUp, ChevronDown, AlertTriangle, ShieldAlert, ShieldCheck, CheckCircle, RefreshCw, Info, Clock, Play, RotateCcw, Download, Upload, MapPin, Monitor, Check, Copy, Smartphone, Tablet } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useRef, useEffect, useState } from "react";
+function TopBannerAd() {
+  const containerRef = useRef(null);
+  const scriptLoadedRef = useRef(false);
+  useEffect(() => {
+    if (scriptLoadedRef.current || !containerRef.current) return;
+    const existingScript = containerRef.current.querySelector('script[data-ad-slot="top-banner"]');
+    if (existingScript) {
+      scriptLoadedRef.current = true;
+      return;
+    }
+    scriptLoadedRef.current = true;
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.dataset.adSlot = "top-banner";
+    script.textContent = `(function(s){
+  s.dataset.zone='11022359',
+  s.src='https://n6wxm.com/vignette.min.js'
+})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+    containerRef.current.appendChild(script);
+    return () => {
+      if (containerRef.current?.contains(script)) {
+        containerRef.current.removeChild(script);
+      }
+    };
+  }, []);
+  return /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", ref: containerRef, style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) });
+}
 const Route$b = createRootRoute({
   head: () => ({
     meta: [
@@ -124,7 +151,7 @@ function RootLayout() {
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) }),
+      /* @__PURE__ */ jsx(TopBannerAd, {}),
       /* @__PURE__ */ jsx("main", { className: "flex-1 overflow-auto", children: /* @__PURE__ */ jsx(Outlet, {}) }),
       /* @__PURE__ */ jsx("div", { className: "ad-slot w-full sticky bottom-0 z-30", style: { minHeight: "60px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×60" }) })
     ] })
@@ -772,7 +799,7 @@ function VpnChecker() {
         )
       ] })
     ] }) : null }),
-    /* @__PURE__ */ jsx("div", { className: "ad-slot rounded-xl mb-6", style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) }),
+    /* @__PURE__ */ jsx(TopBannerAd, {}),
     /* @__PURE__ */ jsxs("div", { className: "glass-card p-6 seo-content", children: [
       /* @__PURE__ */ jsx("h2", { children: "How VPN and Proxy Detection Works" }),
       /* @__PURE__ */ jsx("p", { children: "When you connect to the internet, your IP address is publicly visible to every website and service you access. VPN detection works by cross-referencing your IP address against databases of known VPN provider IP ranges, proxy servers, and datacenter hosting environments." }),
@@ -1007,7 +1034,7 @@ function SpeedTest() {
         /* @__PURE__ */ jsx("p", { className: "text-xs font-medium mt-1", style: { color }, children: note })
       ] }, label)) })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "ad-slot rounded-xl mb-6", style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) }),
+    /* @__PURE__ */ jsx(TopBannerAd, {}),
     /* @__PURE__ */ jsxs("div", { className: "glass-card p-6 seo-content", children: [
       /* @__PURE__ */ jsx("h2", { children: "Understanding Internet Speed Test Results" }),
       /* @__PURE__ */ jsx("p", { children: "An internet speed test measures three key metrics that determine the quality of your internet connection: download speed, upload speed, and ping latency. Understanding these metrics helps you identify performance issues, evaluate your ISP's service quality, and choose the right plan for your needs." }),
@@ -1696,7 +1723,7 @@ function DnsLeak() {
         }
       ) })
     ] }) : null }),
-    /* @__PURE__ */ jsx("div", { className: "ad-slot rounded-xl mb-6", style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) }),
+    /* @__PURE__ */ jsx(TopBannerAd, {}),
     /* @__PURE__ */ jsxs("div", { className: "glass-card p-6 seo-content", children: [
       /* @__PURE__ */ jsx("h2", { children: "What is a DNS Leak and Why Does It Matter?" }),
       /* @__PURE__ */ jsx("p", { children: "A DNS (Domain Name System) leak occurs when your DNS queries are sent outside of your VPN tunnel and directly to your ISP's DNS servers — even while you believe your connection is private. This exposes your browsing activity to your ISP and potentially to government surveillance or hackers on the same network." }),

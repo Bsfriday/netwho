@@ -30,7 +30,6 @@ export function TopBannerAd() {
 
   return (
     <div className="ad-slot w-full" ref={containerRef} style={{ minHeight: '90px' }}>
-      <span>Advertisement · 728×90</span>
     </div>
   )
 }
