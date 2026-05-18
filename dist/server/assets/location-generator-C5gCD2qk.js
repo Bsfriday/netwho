@@ -1,5 +1,5 @@
 import { jsxs, jsx } from "react/jsx-runtime";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Check, Clipboard, Sparkles, RefreshCw, MapPin, Globe2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 function CopyButton({ value, label = "Copy" }) {
@@ -111,6 +111,7 @@ function generateLocation(countryName) {
   const postalCode = country.postalFormatter();
   const apartment = Math.random() < 0.4 ? ` Apt ${randInt(2, 999)}` : "";
   const fullAddress = `${street}${apartment}, ${city}, ${region} ${postalCode}, ${country.name}`;
+  const { latitude, longitude, timezone } = randomCoordinatesAndTimezone(country.code);
   return {
     country: country.name,
     countryCode: country.code,
@@ -118,8 +119,60 @@ function generateLocation(countryName) {
     city,
     postalCode,
     street: `${street}${apartment}`,
-    fullAddress
+    fullAddress,
+    latitude,
+    longitude,
+    timezone
   };
+}
+function randomCoordinatesAndTimezone(countryCode) {
+  switch (countryCode) {
+    case "US":
+      return {
+        latitude: +(randRange(25, 49) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(67, 125) + Math.random())).toFixed(5),
+        timezone: "America/Los_Angeles"
+      };
+    case "CA":
+      return {
+        latitude: +(randRange(43, 60) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(53, 141) + Math.random())).toFixed(5),
+        timezone: "America/Toronto"
+      };
+    case "UK":
+      return {
+        latitude: +(randRange(50, 58) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(1, 6) + Math.random())).toFixed(5),
+        timezone: "Europe/London"
+      };
+    case "DE":
+      return {
+        latitude: +(randRange(47, 55) + Math.random()).toFixed(5),
+        longitude: +(randRange(5, 15) + Math.random()).toFixed(5),
+        timezone: "Europe/Berlin"
+      };
+    case "AU":
+      return {
+        latitude: +(-1 * (randRange(10, 43) - Math.random())).toFixed(5),
+        longitude: +(randRange(113, 153) + Math.random()).toFixed(5),
+        timezone: "Australia/Sydney"
+      };
+    case "JP":
+      return {
+        latitude: +(randRange(30, 43) + Math.random()).toFixed(5),
+        longitude: +(randRange(129, 145) + Math.random()).toFixed(5),
+        timezone: "Asia/Tokyo"
+      };
+    default:
+      return {
+        latitude: +(randRange(-20, 60) + Math.random()).toFixed(5),
+        longitude: +(randRange(-170, 170) + Math.random()).toFixed(5),
+        timezone: "UTC"
+      };
+  }
+}
+function randRange(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function randomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -136,19 +189,25 @@ function LocationGenerator() {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const resultRef = useRef(null);
   const handleGenerate = () => {
     setError(null);
-    setLoading(true);
-    setTimeout(() => {
-      try {
-        const next = generateLocation(country);
-        setLocation(next);
-      } catch (err) {
-        setError("Unable to generate a location right now. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }, 180);
+    try {
+      setLoading(false);
+      const next = generateLocation(country);
+      setLocation(next);
+      setShowResult(false);
+      requestAnimationFrame(() => requestAnimationFrame(() => setShowResult(true)));
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }, 80);
+    } catch (err) {
+      setError("Unable to generate a location right now. Please try again.");
+    }
   };
   return /* @__PURE__ */ jsxs("div", { className: "page-transition p-4 lg:p-6 max-w-6xl mx-auto", children: [
     /* @__PURE__ */ jsxs("div", { className: "mb-6 flex flex-col gap-3", children: [
@@ -219,17 +278,24 @@ function LocationGenerator() {
           ] })
         ] })
       ] }) }),
-      /* @__PURE__ */ jsxs("section", { className: "glass-card p-6 lg:p-7", children: [
+      location ? /* @__PURE__ */ jsxs("section", { ref: resultRef, className: `glass-card p-6 lg:p-7 lg:col-span-2 transform transition-all duration-400 ease-out ${showResult ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`, children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mb-6", children: [
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsx("p", { className: "text-sm uppercase tracking-[0.24em] text-[#4a5c7a]", children: "Result" }),
             /* @__PURE__ */ jsx("h2", { className: "text-2xl font-semibold text-white mt-2", children: "Random location details" })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "rounded-full bg-[rgba(0,212,255,0.08)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d4ff]", children: location ? "Ready" : "Waiting" })
+          /* @__PURE__ */ jsx("div", { className: "rounded-full px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d9ff] bg-[rgba(0,217,255,0.06)] ring-2 ring-[#00d9ff22] shadow-[0_0_18px_rgba(0,217,255,0.08)]", children: "READY" })
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "space-y-4", children: loading ? /* @__PURE__ */ jsx("div", { className: "space-y-4", children: Array.from({
-          length: 4
-        }).map((_, index) => /* @__PURE__ */ jsx("div", { className: "h-16 rounded-3xl bg-[rgba(255,255,255,0.04)] shimmer" }, index)) }) : location ? /* @__PURE__ */ jsx(LocationResultCard, { location }) : /* @__PURE__ */ jsx("div", { className: "rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-6 text-sm text-[#8b9ec7]", children: "No address generated yet. Use the button above to create a country-based random address and postal code." }) })
+        /* @__PURE__ */ jsx("div", { className: "space-y-4", children: /* @__PURE__ */ jsx(LocationResultCard, { location, onGenerate: handleGenerate }) })
+      ] }) : /* @__PURE__ */ jsxs("section", { className: "glass-card p-6 lg:p-7", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mb-6", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("p", { className: "text-sm uppercase tracking-[0.24em] text-[#4a5c7a]", children: "Result" }),
+            /* @__PURE__ */ jsx("h2", { className: "text-2xl font-semibold text-white mt-2", children: "Random location details" })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "rounded-full bg-[rgba(0,212,255,0.08)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d4ff]", children: "Waiting" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-6 text-sm text-[#8b9ec7]", children: "No address generated yet. Use the button above to create a country-based random address and postal code." })
       ] })
     ] }),
     /* @__PURE__ */ jsxs("article", { className: "glass-card p-6 mt-6 prose prose-invert max-w-none", children: [
@@ -246,34 +312,78 @@ function LocationGenerator() {
     ] })
   ] });
 }
-function LocationResultCard({
-  location
+function TypingText({
+  text
 }) {
-  return /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: [{
-    label: "Street Address",
-    value: location.street
-  }, {
-    label: "City",
-    value: location.city
-  }, {
-    label: "State / Region",
-    value: location.region
-  }, {
-    label: "Postal / ZIP Code",
-    value: location.postalCode
-  }, {
-    label: "Country",
-    value: location.country
-  }, {
-    label: "Full Address",
-    value: location.fullAddress
-  }].map((field) => /* @__PURE__ */ jsx("div", { className: "rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3", children: [
-    /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.24em] text-[#4a5c7a] mb-2", children: field.label }),
-      /* @__PURE__ */ jsx("p", { className: "break-words text-sm text-white leading-6", children: field.value })
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    if (!text) {
+      setDisplayed("");
+      return;
+    }
+    let i = 0;
+    setDisplayed("");
+    const id = setInterval(() => {
+      i += 1;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, Math.max(8, Math.floor(180 / Math.max(1, text.length))));
+    return () => clearInterval(id);
+  }, [text]);
+  return /* @__PURE__ */ jsx("p", { className: "break-words text-sm text-white leading-6", children: displayed });
+}
+function LocationResultCard({
+  location,
+  onGenerate
+}) {
+  return /* @__PURE__ */ jsxs("div", { className: "grid gap-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+        /* @__PURE__ */ jsx("div", { className: "rounded-full bg-[rgba(0,217,255,0.06)] p-2 shadow-[0_0_12px_rgba(0,217,255,0.06)]", children: /* @__PURE__ */ jsx(MapPin, { className: "w-5 h-5 text-[#00d9ff]" }) }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("p", { className: "text-sm font-semibold text-white", children: "Generated location" }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-[#8b9ec7]", children: "Instant results · Light typing animation" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx(CopyButton, { value: location.fullAddress, label: "Copy Address" }),
+        /* @__PURE__ */ jsx("button", { onClick: () => onGenerate && onGenerate(), className: "rounded-full bg-[#00d9ff] px-4 py-2 text-sm font-semibold text-[#020617] shadow-[0_6px_18px_rgba(0,217,255,0.12)] transition transform hover:-translate-y-1", children: "Generate New" }),
+        /* @__PURE__ */ jsx("button", { className: "rounded-full bg-[rgba(255,255,255,0.03)] px-4 py-2 text-sm text-[#cbd5e1] transition hover:-translate-y-1", children: "Save" }),
+        /* @__PURE__ */ jsx("button", { className: "rounded-full bg-[rgba(255,255,255,0.03)] px-4 py-2 text-sm text-[#cbd5e1] transition hover:-translate-y-1", children: "Share" })
+      ] })
     ] }),
-    /* @__PURE__ */ jsx(CopyButton, { value: field.value, label: "Copy" })
-  ] }) }, field.label)) });
+    /* @__PURE__ */ jsx("div", { className: "grid gap-4 sm:grid-cols-2", children: [{
+      label: "Street Address",
+      value: location.street
+    }, {
+      label: "City",
+      value: location.city
+    }, {
+      label: "State / Region",
+      value: location.region
+    }, {
+      label: "Postal / ZIP Code",
+      value: location.postalCode
+    }, {
+      label: "Country",
+      value: location.country
+    }, {
+      label: "Full Address",
+      value: location.fullAddress
+    }, {
+      label: "Coordinates",
+      value: location.latitude && location.longitude ? `${location.latitude}, ${location.longitude}` : "N/A"
+    }, {
+      label: "Time Zone",
+      value: location.timezone ?? "UTC"
+    }].map((field) => /* @__PURE__ */ jsx("div", { className: "rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.24em] text-[#4a5c7a] mb-2", children: field.label }),
+        /* @__PURE__ */ jsx(TypingText, { text: String(field.value) })
+      ] }),
+      /* @__PURE__ */ jsx(CopyButton, { value: String(field.value), label: "Copy" })
+    ] }) }, field.label)) })
+  ] });
 }
 export {
   LocationGenerator as component

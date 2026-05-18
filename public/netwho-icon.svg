@@ -1,0 +1,76 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NetWho app icon">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#050B1A"/>
+      <stop offset="60%" stop-color="#071226"/>
+      <stop offset="100%" stop-color="#05102a"/>
+    </linearGradient>
+
+    <radialGradient id="centerGlow" cx="50%" cy="44%" r="60%">
+      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0.25"/>
+      <stop offset="40%" stop-color="#00B8F0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#050B1A" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="neon" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10" result="g1"/>
+      <feColorMatrix in="g1" type="matrix" values="0 0 0 0 0   0 0 0 0 0.85  0 0 0 0 1  0 0 0 0.6 0"/>
+      <feGaussianBlur stdDeviation="3" result="g2"/>
+      <feMerge>
+        <feMergeNode in="g2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <clipPath id="roundClip">
+      <rect x="0" y="0" width="192" height="192" rx="24" ry="24"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundClip)">
+    <!-- Background -->
+    <rect width="192" height="192" fill="url(#bgGrad)" />
+    <rect width="192" height="192" fill="url(#centerGlow)" style="mix-blend-mode:screen"/>
+
+    <!-- central star glow layers -->
+    <g transform="translate(96,88)">
+      <!-- outer soft cyan glow -->
+      <g filter="url(#softGlow)">
+        <path d="M0-36 L10-4 L44-4 L16 12 L26 44 L0 24 L-26 44 L-16 12 L-44-4 L-10-4 Z"
+              fill="#00D9FF" opacity="0.12" />
+      </g>
+
+      <!-- stronger neon layer -->
+      <g filter="url(#neon)">
+        <path d="M0-32 L8-4 L36-4 L14 10 L22 36 L0 20 L-22 36 L-14 10 L-36-4 L-8-4 Z"
+              fill="#00F0FF" stroke="#00D9FF" stroke-width="1"/>
+      </g>
+
+      <!-- sharp inner star (center) -->
+      <path d="M0-20 L5-3 L19-3 L7 5 L11 20 L0 12 L-11 20 L-7 5 L-19-3 L-5-3 Z"
+            fill="#E6FFFF" opacity="0.98"/>
+
+      <!-- tiny center core to add brightness -->
+      <circle r="2.6" fill="#FFFFFF" opacity="0.95" />
+    </g>
+
+    <!-- small sparkling particles (minimal) -->
+    <g fill="#BFF6FF" opacity="0.9">
+      <circle cx="46" cy="36" r="1.6" opacity="0.9"/>
+      <circle cx="150" cy="44" r="1.2" opacity="0.75"/>
+      <circle cx="38" cy="128" r="1.2" opacity="0.7"/>
+      <circle cx="132" cy="142" r="1.4" opacity="0.8"/>
+    </g>
+
+    <!-- subtle radial noise / vignette for depth -->
+    <ellipse cx="96" cy="96" rx="82" ry="82" fill="#000" opacity="0.06"/>
+  </g>
+</svg>
