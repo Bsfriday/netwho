@@ -12,22 +12,19 @@ function TopBannerAd() {
       scriptLoadedRef.current = true;
       return;
     }
-    scriptLoadedRef.current = true;
     const script = document.createElement("script");
     script.type = "text/javascript";
     script.dataset.adSlot = "top-banner";
-    script.textContent = `(function(s){
-  s.dataset.zone='11022359',
-  s.src='https://n6wxm.com/vignette.min.js'
-})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+    script.textContent = `(function(s){s.dataset.zone='11022566',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
     containerRef.current.appendChild(script);
+    scriptLoadedRef.current = true;
     return () => {
       if (containerRef.current?.contains(script)) {
         containerRef.current.removeChild(script);
       }
     };
   }, []);
-  return /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", ref: containerRef, style: { minHeight: "90px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×90" }) });
+  return /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", ref: containerRef, style: { minHeight: "90px" } });
 }
 const Route$b = createRootRoute({
   head: () => ({
@@ -39,6 +36,7 @@ const Route$b = createRootRoute({
         name: "description",
         content: "NetWho is a free IP intelligence platform. Check your IP address, detect VPN/proxy usage, run speed tests, and test for DNS leaks. Protect your online privacy."
       },
+      { name: "google-adsense-account", content: "ca-pub-5740499104150490" },
       { name: "theme-color", content: "#070b14" },
       { name: "monetag", content: "3c61f7f1e03424366ce1b1aac1ef9443" }
     ],
@@ -159,7 +157,19 @@ function RootLayout() {
 }
 function RootDocument({ children }) {
   return /* @__PURE__ */ jsxs("html", { lang: "en", children: [
-    /* @__PURE__ */ jsx("head", { children: /* @__PURE__ */ jsx(HeadContent, {}) }),
+    /* @__PURE__ */ jsxs("head", { children: [
+      /* @__PURE__ */ jsx(HeadContent, {}),
+      "        ",
+      /* @__PURE__ */ jsx(
+        "script",
+        {
+          async: true,
+          src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5740499104150490",
+          crossOrigin: "anonymous"
+        }
+      ),
+      "      "
+    ] }),
     /* @__PURE__ */ jsxs("body", { children: [
       children,
       /* @__PURE__ */ jsx(Scripts, {}),

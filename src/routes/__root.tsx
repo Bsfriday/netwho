@@ -27,6 +27,7 @@ export const Route = createRootRoute({
         content:
           'NetWho is a free IP intelligence platform. Check your IP address, detect VPN/proxy usage, run speed tests, and test for DNS leaks. Protect your online privacy.',
       },
+      { name: 'google-adsense-account', content: 'ca-pub-5740499104150490' },
       { name: 'theme-color', content: '#070b14' },
       { name: 'monetag', content: '3c61f7f1e03424366ce1b1aac1ef9443' },
     ],
@@ -205,8 +206,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <HeadContent />
-      </head>
+        <HeadContent />        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5740499104150490"
+          crossOrigin="anonymous"
+        />      </head>
       <body>
         {children}
         <Scripts />
