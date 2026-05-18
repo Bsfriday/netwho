@@ -19,7 +19,7 @@ import {
   Check,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { SidebarAd } from '@/components/SidebarAd'
+import { SidebarAd } from '../components/SidebarAd'
 
 export const Route = createFileRoute('/dashboard')({
   head: () => ({
