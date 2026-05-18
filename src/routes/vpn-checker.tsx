@@ -10,6 +10,7 @@ import {
   Info,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { TopBannerAd } from '@/components/TopBannerAd'
 
 export const Route = createFileRoute('/vpn-checker')({
   head: () => ({
@@ -239,9 +240,7 @@ export default function VpnChecker() {
       </div>
 
       {/* Ad */}
-      <div className="ad-slot rounded-xl mb-6" style={{ minHeight: '90px' }}>
-        <span>Advertisement · 728×90</span>
-      </div>
+      <TopBannerAd />
 
       {/* SEO explanation */}
       <div className="glass-card p-6 seo-content">

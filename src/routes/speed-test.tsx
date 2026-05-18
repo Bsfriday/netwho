@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Zap, Download, Upload, Clock, Play, RotateCcw, Info } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { TopBannerAd } from '@/components/TopBannerAd'
 
 export const Route = createFileRoute('/speed-test')({
   head: () => ({
@@ -260,9 +261,7 @@ export default function SpeedTest() {
       </div>
 
       {/* Ad */}
-      <div className="ad-slot rounded-xl mb-6" style={{ minHeight: '90px' }}>
-        <span>Advertisement · 728×90</span>
-      </div>
+      <TopBannerAd />
 
       {/* SEO content */}
       <div className="glass-card p-6 seo-content">
