@@ -211,6 +211,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         <Scripts />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(s){\n  s.dataset.zone='11022255',\n  s.src='https://nap5k.com/tag.min.js'\n})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))"
+          }}
+        />
       </body>
     </html>
   )

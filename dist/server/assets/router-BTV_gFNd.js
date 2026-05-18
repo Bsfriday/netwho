@@ -135,7 +135,15 @@ function RootDocument({ children }) {
     /* @__PURE__ */ jsx("head", { children: /* @__PURE__ */ jsx(HeadContent, {}) }),
     /* @__PURE__ */ jsxs("body", { children: [
       children,
-      /* @__PURE__ */ jsx(Scripts, {})
+      /* @__PURE__ */ jsx(Scripts, {}),
+      /* @__PURE__ */ jsx(
+        "script",
+        {
+          dangerouslySetInnerHTML: {
+            __html: "(function(s){\n  s.dataset.zone='11022255',\n  s.src='https://nap5k.com/tag.min.js'\n})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))"
+          }
+        }
+      )
     ] })
   ] });
 }
