@@ -6,6 +6,9 @@ export interface LocationData {
   postalCode: string
   street: string
   fullAddress: string
+  latitude?: number
+  longitude?: number
+  timezone?: string
 }
 
 export interface CountryDefinition {
@@ -102,6 +105,8 @@ export function generateLocation(countryName: string): LocationData {
   const apartment = Math.random() < 0.4 ? ` Apt ${randInt(2, 999)}` : ''
   const fullAddress = `${street}${apartment}, ${city}, ${region} ${postalCode}, ${country.name}`
 
+  const { latitude, longitude, timezone } = randomCoordinatesAndTimezone(country.code)
+
   return {
     country: country.name,
     countryCode: country.code,
@@ -110,7 +115,62 @@ export function generateLocation(countryName: string): LocationData {
     postalCode,
     street: `${street}${apartment}`,
     fullAddress,
+    latitude,
+    longitude,
+    timezone,
   }
+}
+
+function randomCoordinatesAndTimezone(countryCode: string) {
+  // Provide plausible coordinate boxes and a representative timezone per country code.
+  switch (countryCode) {
+    case 'US':
+      return {
+        latitude: +(randRange(25, 49) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(67, 125) + Math.random())).toFixed(5),
+        timezone: 'America/Los_Angeles',
+      }
+    case 'CA':
+      return {
+        latitude: +(randRange(43, 60) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(53, 141) + Math.random())).toFixed(5),
+        timezone: 'America/Toronto',
+      }
+    case 'UK':
+      return {
+        latitude: +(randRange(50, 58) + Math.random()).toFixed(5),
+        longitude: +(-1 * (randRange(1, 6) + Math.random())).toFixed(5),
+        timezone: 'Europe/London',
+      }
+    case 'DE':
+      return {
+        latitude: +(randRange(47, 55) + Math.random()).toFixed(5),
+        longitude: +(randRange(5, 15) + Math.random()).toFixed(5),
+        timezone: 'Europe/Berlin',
+      }
+    case 'AU':
+      return {
+        latitude: +(-1 * (randRange(10, 43) - Math.random())).toFixed(5),
+        longitude: +(randRange(113, 153) + Math.random()).toFixed(5),
+        timezone: 'Australia/Sydney',
+      }
+    case 'JP':
+      return {
+        latitude: +(randRange(30, 43) + Math.random()).toFixed(5),
+        longitude: +(randRange(129, 145) + Math.random()).toFixed(5),
+        timezone: 'Asia/Tokyo',
+      }
+    default:
+      return {
+        latitude: +(randRange(-20, 60) + Math.random()).toFixed(5),
+        longitude: +(randRange(-170, 170) + Math.random()).toFixed(5),
+        timezone: 'UTC',
+      }
+  }
+}
+
+function randRange(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function randomItem<T>(items: T[]) {

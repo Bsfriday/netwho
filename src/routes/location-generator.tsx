@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Globe2, MapPin, RefreshCw, Sparkles } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { CopyButton } from '@/components/CopyButton'
@@ -26,20 +26,26 @@ function LocationGenerator() {
   const [location, setLocation] = useState<LocationData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showResult, setShowResult] = useState(false)
+  const resultRef = useRef<HTMLDivElement | null>(null)
 
   const handleGenerate = () => {
     setError(null)
-    setLoading(true)
-    setTimeout(() => {
-      try {
-        const next = generateLocation(country)
-        setLocation(next)
-      } catch (err) {
-        setError('Unable to generate a location right now. Please try again.')
-      } finally {
-        setLoading(false)
-      }
-    }, 180)
+    // Instant generation with immediate data population
+    try {
+      setLoading(false)
+      const next = generateLocation(country)
+      setLocation(next)
+      // reveal the result with animation
+      setShowResult(false)
+      requestAnimationFrame(() => requestAnimationFrame(() => setShowResult(true)))
+      // scroll result into view after a short tick
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 80)
+    } catch (err) {
+      setError('Unable to generate a location right now. Please try again.')
+    }
   }
 
   return (
@@ -142,33 +148,45 @@ function LocationGenerator() {
           </div>
         </section>
 
-        <section className="glass-card p-6 lg:p-7">
-          <div className="flex items-center justify-between gap-3 mb-6">
-            <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-[#4a5c7a]">Result</p>
-              <h2 className="text-2xl font-semibold text-white mt-2">Random location details</h2>
+        {/* Result section: hidden until generation; when present it spans full width below generator */}
+        {location ? (
+          <section
+            ref={resultRef}
+            className={`glass-card p-6 lg:p-7 lg:col-span-2 transform transition-all duration-400 ease-out ${
+              showResult ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3 mb-6">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-[#4a5c7a]">Result</p>
+                <h2 className="text-2xl font-semibold text-white mt-2">Random location details</h2>
+              </div>
+              <div className="rounded-full px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d9ff] bg-[rgba(0,217,255,0.06)] ring-2 ring-[#00d9ff22] shadow-[0_0_18px_rgba(0,217,255,0.08)]">
+                READY
+              </div>
             </div>
-            <div className="rounded-full bg-[rgba(0,212,255,0.08)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d4ff]">
-              {location ? 'Ready' : 'Waiting'}
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            {loading ? (
-              <div className="space-y-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="h-16 rounded-3xl bg-[rgba(255,255,255,0.04)] shimmer" />
-                ))}
+            <div className="space-y-4">
+              <LocationResultCard location={location} onGenerate={handleGenerate} />
+            </div>
+          </section>
+        ) : (
+          <section className="glass-card p-6 lg:p-7">
+            <div className="flex items-center justify-between gap-3 mb-6">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-[#4a5c7a]">Result</p>
+                <h2 className="text-2xl font-semibold text-white mt-2">Random location details</h2>
               </div>
-            ) : location ? (
-              <LocationResultCard location={location} />
-            ) : (
-              <div className="rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-6 text-sm text-[#8b9ec7]">
-                No address generated yet. Use the button above to create a country-based random address and postal code.
+              <div className="rounded-full bg-[rgba(0,212,255,0.08)] px-3 py-2 text-xs uppercase tracking-[0.2em] text-[#00d4ff]">
+                Waiting
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+
+            <div className="rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-6 text-sm text-[#8b9ec7]">
+              No address generated yet. Use the button above to create a country-based random address and postal code.
+            </div>
+          </section>
+        )}
       </div>
 
       <article className="glass-card p-6 mt-6 prose prose-invert max-w-none">
@@ -193,30 +211,79 @@ function LocationGenerator() {
   )
 }
 
-function LocationResultCard({ location }: { location: LocationData }) {
+function TypingText({ text }: { text?: string }) {
+  const [displayed, setDisplayed] = useState('')
+  useEffect(() => {
+    if (!text) {
+      setDisplayed('')
+      return
+    }
+    let i = 0
+    setDisplayed('')
+    const id = setInterval(() => {
+      i += 1
+      setDisplayed(text.slice(0, i))
+      if (i >= text.length) clearInterval(id)
+    }, Math.max(8, Math.floor(180 / Math.max(1, text.length))))
+    return () => clearInterval(id)
+  }, [text])
+  return <p className="break-words text-sm text-white leading-6">{displayed}</p>
+}
+
+function LocationResultCard({
+  location,
+  onGenerate,
+}: {
+  location: LocationData
+  onGenerate?: () => void
+}) {
   return (
     <div className="grid gap-4">
-      {[
-        { label: 'Street Address', value: location.street },
-        { label: 'City', value: location.city },
-        { label: 'State / Region', value: location.region },
-        { label: 'Postal / ZIP Code', value: location.postalCode },
-        { label: 'Country', value: location.country },
-        { label: 'Full Address', value: location.fullAddress },
-      ].map((field) => (
-        <div
-          key={field.label}
-          className="rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-[#4a5c7a] mb-2">{field.label}</p>
-              <p className="break-words text-sm text-white leading-6">{field.value}</p>
-            </div>
-            <CopyButton value={field.value} label="Copy" />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-[rgba(0,217,255,0.06)] p-2 shadow-[0_0_12px_rgba(0,217,255,0.06)]">
+            <MapPin className="w-5 h-5 text-[#00d9ff]" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">Generated location</p>
+            <p className="text-xs text-[#8b9ec7]">Instant results · Light typing animation</p>
           </div>
         </div>
-      ))}
+        <div className="flex items-center gap-2">
+          <CopyButton value={location.fullAddress} label="Copy Address" />
+          <button
+            onClick={() => onGenerate && onGenerate()}
+            className="rounded-full bg-[#00d9ff] px-4 py-2 text-sm font-semibold text-[#020617] shadow-[0_6px_18px_rgba(0,217,255,0.12)] transition transform hover:-translate-y-1"
+          >
+            Generate New
+          </button>
+          <button className="rounded-full bg-[rgba(255,255,255,0.03)] px-4 py-2 text-sm text-[#cbd5e1] transition hover:-translate-y-1">Save</button>
+          <button className="rounded-full bg-[rgba(255,255,255,0.03)] px-4 py-2 text-sm text-[#cbd5e1] transition hover:-translate-y-1">Share</button>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {[
+          { label: 'Street Address', value: location.street },
+          { label: 'City', value: location.city },
+          { label: 'State / Region', value: location.region },
+          { label: 'Postal / ZIP Code', value: location.postalCode },
+          { label: 'Country', value: location.country },
+          { label: 'Full Address', value: location.fullAddress },
+          { label: 'Coordinates', value: location.latitude && location.longitude ? `${location.latitude}, ${location.longitude}` : 'N/A' },
+          { label: 'Time Zone', value: location.timezone ?? 'UTC' },
+        ].map((field) => (
+          <div key={field.label} className="rounded-3xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-[#4a5c7a] mb-2">{field.label}</p>
+                <TypingText text={String(field.value)} />
+              </div>
+              <CopyButton value={String(field.value)} label="Copy" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
