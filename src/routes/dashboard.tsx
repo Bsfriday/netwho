@@ -19,6 +19,7 @@ import {
   Check,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { SidebarAd } from '~/components/SidebarAd'
 
 export const Route = createFileRoute('/dashboard')({
   head: () => ({
@@ -307,9 +308,7 @@ export default function Dashboard() {
           </div>
 
           {/* Sidebar ad */}
-          <div className="ad-slot rounded-xl" style={{ minHeight: '250px' }}>
-            <span>Advertisement · 300×250</span>
-          </div>
+          <SidebarAd />
         </div>
 
         {/* Right: IP Details */}

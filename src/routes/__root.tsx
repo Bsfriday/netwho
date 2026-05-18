@@ -27,6 +27,7 @@ export const Route = createRootRoute({
           'NetWho is a free IP intelligence platform. Check your IP address, detect VPN/proxy usage, run speed tests, and test for DNS leaks. Protect your online privacy.',
       },
       { name: 'theme-color', content: '#070b14' },
+      { name: 'monetag', content: '3c61f7f1e03424366ce1b1aac1ef9443' },
     ],
     links: [{ rel: 'icon', href: '/favicon.ico' }],
   }),
