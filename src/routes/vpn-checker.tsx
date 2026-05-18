@@ -10,7 +10,6 @@ import {
   Info,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { TopBannerAd } from '@/components/TopBannerAd'
 
 export const Route = createFileRoute('/vpn-checker')({
   head: () => ({
@@ -232,9 +231,6 @@ export default function VpnChecker() {
           </div>
         ) : null}
       </div>
-
-      {/* Ad */}
-      <TopBannerAd />
 
       {/* SEO explanation */}
       <div className="glass-card p-6 seo-content">

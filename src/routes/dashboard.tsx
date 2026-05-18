@@ -19,7 +19,6 @@ import {
   Check,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { SidebarAd } from '../components/SidebarAd'
 
 export const Route = createFileRoute('/dashboard')({
   head: () => ({
@@ -133,12 +132,12 @@ function InfoRow({
   }
 
   return (
-    <div className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0 group">
-      <div className="flex items-center gap-2 text-sm text-[#8b9ec7] min-w-[130px]">
+    <div className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0 group gap-3">
+      <div className="flex items-center gap-2 text-sm text-[#8b9ec7] min-w-0 sm:min-w-[130px]">
         {Icon && <Icon className="w-3.5 h-3.5 opacity-70" />}
         <span>{label}</span>
       </div>
-      <div className="flex items-center gap-2 flex-1 justify-end">
+      <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
         {badge}
         <span
           className={`text-sm font-mono text-right ${highlight ? 'text-[#00d4ff] font-semibold text-base' : 'text-white'}`}
@@ -307,8 +306,6 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {/* Sidebar ad */}
-          <SidebarAd />
         </div>
 
         {/* Right: IP Details */}

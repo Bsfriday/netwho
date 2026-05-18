@@ -2,7 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Wifi, CheckCircle, AlertTriangle, ShieldCheck, ShieldAlert, RefreshCw, Info } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { TopBannerAd } from '@/components/TopBannerAd'
 
 export const Route = createFileRoute('/dns-leak')({
   head: () => ({
@@ -243,9 +242,6 @@ export default function DnsLeak() {
           </div>
         ) : null}
       </div>
-
-      {/* Ad */}
-      <TopBannerAd />
 
       {/* SEO content */}
       <div className="glass-card p-6 seo-content">

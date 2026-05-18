@@ -16,24 +16,31 @@ import {
 import { useState } from 'react'
 import '../styles.css'
 import { TopBannerAd } from '@/components/TopBannerAd'
-import { BottomStickyAd } from '@/components/BottomStickyAd'
+import { PwaInstallButton } from '@/components/PwaInstallButton'
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       { title: 'NetWho – IP & Network Intelligence Tool | Check Your IP, VPN, DNS' },
       {
         name: 'description',
         content:
           'NetWho is a free IP intelligence platform. Check your IP address, detect VPN/proxy usage, run speed tests, and test for DNS leaks. Protect your online privacy.',
       },
+      { name: 'application-name', content: 'NetWho' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       { name: 'google-adsense-account', content: 'ca-pub-5740499104150490' },
       { name: 'theme-color', content: '#070b14' },
       { name: 'monetag', content: '3c61f7f1e03424366ce1b1aac1ef9443' },
     ],
-    links: [{ rel: 'icon', href: '/favicon.ico' }],
+    links: [
+      { rel: 'icon', href: '/favicon.ico' },
+      { rel: 'manifest', href: '/manifest.webmanifest' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+    ],
   }),
   shellComponent: RootDocument,
   component: RootLayout,
@@ -149,55 +156,64 @@ function RootLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-[#070b14] cyber-grid overflow-hidden">
+    <div className="flex min-h-screen bg-[#070b14] cyber-grid overflow-x-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-col flex-shrink-0 bg-[#0a1020] border-r border-[rgba(0,212,255,0.12)]">
         <Sidebar />
       </aside>
 
-      {/* Mobile sidebar overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="relative w-72 h-full bg-[#0a1020] border-r border-[rgba(0,212,255,0.2)] flex flex-col">
-            <Sidebar onClose={() => setMobileOpen(false)} />
-          </aside>
-        </div>
-      )}
-
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-[#0a1020] border-b border-[rgba(0,212,255,0.12)]">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="text-gray-400 hover:text-white"
+        <div className="lg:hidden bg-[#0a1020] border-b border-[rgba(0,212,255,0.12)]">
+          <div className="flex items-center justify-between gap-3 px-4 py-3">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <Globe className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-bold text-lg">
+                Net<span className="neon-text">Who</span>
+              </span>
+            </Link>
+            <button
+              onClick={() => setMobileOpen((open) => !open)}
+              className="text-gray-400 hover:text-white"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+          <div
+            className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${mobileOpen ? 'max-h-[600px] pb-4' : 'max-h-0'}`}
           >
-            <Menu className="w-5 h-5" />
-          </button>
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
-              <Globe className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-lg">
-              Net<span className="neon-text">Who</span>
-            </span>
-          </Link>
+            <nav className="flex flex-wrap gap-2 px-4 pt-2">
+              {toolLinks.map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-3 py-2 text-xs font-semibold text-[#cbd5e1] transition hover:border-[#00d4ff] hover:text-white"
+                >
+                  <Icon className="w-4 h-4 text-[#00d4ff]" />
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        {/* Top banner ad */}
-        <TopBannerAd />
+        <div className="flex-1 flex flex-col overflow-hidden px-4 py-4 lg:px-6 lg:py-6">
+          <div className="space-y-4">
+            <TopBannerAd />
+            <div className="flex flex-col items-end gap-3">
+              <PwaInstallButton />
+            </div>
+          </div>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
-
-        {/* Bottom sticky ad */}
-        <BottomStickyAd />
+          <main className="flex-1 overflow-auto mt-4">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   )

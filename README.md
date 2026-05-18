@@ -36,9 +36,20 @@ Ad placement slots are included throughout the layout (top banner, middle conten
 
 ```bash
 npm install
-npm run dev        # Starts dev server on port 3000 (Netlify CLI on 8888)
+npm run dev        # Starts dev server on port 3000
 npm run build      # Production build
 ```
+
+## Cloudflare Pages Deployment
+
+This project can deploy to Cloudflare Pages using a static client build plus a Pages Function for `/api/ip`.
+
+- Build command: `npm run build`
+- Publish directory: `dist/client`
+- Functions directory: `functions`
+- Function path: `functions/api/ip.ts` → `/api/ip`
+
+Cloudflare Pages will serve the built UI from the global edge and execute the API endpoint close to users.
 
 ## Routes
 

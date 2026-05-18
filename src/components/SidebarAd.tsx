@@ -48,9 +48,9 @@ export function SidebarAd() {
 
   return (
     <div
-      className="ad-slot rounded-xl"
+      className="ad-slot ad-rotate rounded-xl ad-fade"
       ref={containerRef}
-      style={visible ? { minHeight: '250px' } : { minHeight: 0, display: 'none' }}
+      style={visible ? { minHeight: '250px', width: '100%' } : { minHeight: 0, display: 'none' }}
     />
   )
 }
