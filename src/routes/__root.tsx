@@ -37,9 +37,9 @@ export const Route = createRootRoute({
       { name: 'monetag', content: '3c61f7f1e03424366ce1b1aac1ef9443' },
     ],
     links: [
-      { rel: 'icon', href: '/netwho-icon.svg' },
-      { rel: 'manifest', href: '/manifest.webmanifest' },
-      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'icon', href: '/netwho-icon.svg?v=2' },
+      { rel: 'manifest', href: '/manifest.webmanifest?v=2' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=2' },
     ],
   }),
   shellComponent: RootDocument,
