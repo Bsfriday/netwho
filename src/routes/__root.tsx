@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import '../styles.css'
+import { TopBannerAd } from '@/components/TopBannerAd'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -184,9 +185,7 @@ function RootLayout() {
         </div>
 
         {/* Top banner ad */}
-        <div className="ad-slot w-full" style={{ minHeight: '90px' }}>
-          <span>Advertisement · 728×90</span>
-        </div>
+        <TopBannerAd />
 
         {/* Page content */}
         <main className="flex-1 overflow-auto">
