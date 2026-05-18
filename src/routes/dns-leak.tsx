@@ -95,7 +95,6 @@ export default function DnsLeak() {
 
   // DNS leak status: if VPN is active but ISP DNS is exposed, that's a leak
   const hasLeak = data?.vpnDetected && dnsServers.some((s) => s.type === 'isp')
-  const isSecure = !hasLeak
 
   return (
     <div className="page-transition p-4 lg:p-6 max-w-4xl mx-auto">

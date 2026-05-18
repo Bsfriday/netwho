@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet, Link, useLocation, HeadContent, Scripts } from '@tanstack/react-router'
 import {
   Globe,
+  MapPin,
   Shield,
   Zap,
   Wifi,
@@ -15,6 +16,7 @@ import {
 import { useState } from 'react'
 import '../styles.css'
 import { TopBannerAd } from '@/components/TopBannerAd'
+import { BottomStickyAd } from '@/components/BottomStickyAd'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -42,6 +44,7 @@ const toolLinks = [
   { to: '/vpn-checker', label: 'VPN Checker', icon: Shield },
   { to: '/speed-test', label: 'Speed Test', icon: Zap },
   { to: '/dns-leak', label: 'DNS Leak Test', icon: Wifi },
+  { to: '/location-generator', label: 'Location Generator', icon: MapPin },
 ]
 
 const seoLinks = [
@@ -194,9 +197,7 @@ function RootLayout() {
         </main>
 
         {/* Bottom sticky ad */}
-        <div className="ad-slot w-full sticky bottom-0 z-30" style={{ minHeight: '60px' }}>
-          <span>Advertisement · 728×60</span>
-        </div>
+        <BottomStickyAd />
       </div>
     </div>
   )

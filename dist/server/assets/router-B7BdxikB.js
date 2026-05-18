@@ -1,32 +1,110 @@
-import { createRootRoute, Link, Outlet, HeadContent, Scripts, useLocation, createFileRoute, redirect, createRouter } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet, HeadContent, Scripts, useLocation, createFileRoute, lazyRouteComponent, redirect, createRouter } from "@tanstack/react-router";
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
-import { Menu, Globe, X, Shield, Zap, Wifi, BookOpen, Lock, Server, Gauge, Eye, ChevronUp, ChevronDown, AlertTriangle, ShieldAlert, ShieldCheck, CheckCircle, RefreshCw, Info, Clock, Play, RotateCcw, Download, Upload, MapPin, Monitor, Check, Copy, Smartphone, Tablet } from "lucide-react";
-import { useRef, useEffect, useState } from "react";
+import { Menu, Globe, X, Shield, Zap, Wifi, MapPin, BookOpen, Lock, Server, Gauge, Eye, ChevronUp, ChevronDown, AlertTriangle, ShieldAlert, ShieldCheck, CheckCircle, RefreshCw, Info, Clock, Play, RotateCcw, Download, Upload, Monitor, Check, Copy, Smartphone, Tablet } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 function TopBannerAd() {
   const containerRef = useRef(null);
-  const scriptLoadedRef = useRef(false);
+  const scriptRef = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    if (scriptLoadedRef.current || !containerRef.current) return;
-    const existingScript = containerRef.current.querySelector('script[data-ad-slot="top-banner"]');
+    if (!containerRef.current) return;
+    const existingScript = containerRef.current.querySelector('script[data-ad-slot="native-banner"]');
     if (existingScript) {
-      scriptLoadedRef.current = true;
+      setVisible(true);
       return;
     }
     const script = document.createElement("script");
     script.type = "text/javascript";
-    script.dataset.adSlot = "top-banner";
-    script.textContent = `(function(s){s.dataset.zone='11022566',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    script.dataset.adSlot = "native-banner";
+    script.src = "https://pl29481525.effectivecpmnetwork.com/75213feb8290bad2d7be426287f712e0/invoke.js";
+    scriptRef.current = script;
+    const observer = new MutationObserver(() => {
+      if (!containerRef.current) return;
+      const hasContent = containerRef.current.childElementCount > 1 || Array.from(containerRef.current.children).some((n) => n !== script);
+      if (hasContent) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(containerRef.current, { childList: true, subtree: true });
     containerRef.current.appendChild(script);
-    scriptLoadedRef.current = true;
+    const timeout = setTimeout(() => {
+      if (!visible && containerRef.current && scriptRef.current && containerRef.current.contains(scriptRef.current)) {
+        containerRef.current.removeChild(scriptRef.current);
+      }
+    }, 3e3);
     return () => {
-      if (containerRef.current?.contains(script)) {
-        containerRef.current.removeChild(script);
+      observer.disconnect();
+      clearTimeout(timeout);
+      if (scriptRef.current && containerRef.current?.contains(scriptRef.current)) {
+        containerRef.current.removeChild(scriptRef.current);
       }
     };
   }, []);
-  return /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", ref: containerRef, style: { minHeight: "90px" } });
+  return /* @__PURE__ */ jsx("div", { className: "ad-slot w-full", ref: containerRef, style: visible ? { minHeight: "90px" } : { minHeight: 0, display: "none" }, children: /* @__PURE__ */ jsx("div", { id: "container-75213feb8290bad2d7be426287f712e0" }) });
 }
-const Route$b = createRootRoute({
+function BottomStickyAd() {
+  const containerRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const adSlot = document.createElement("ins");
+    adSlot.className = "adsbygoogle";
+    adSlot.style.display = "block";
+    adSlot.style.width = "100%";
+    adSlot.setAttribute("data-ad-client", "ca-pub-5740499104150490");
+    adSlot.setAttribute("data-ad-slot", "1234567890");
+    adSlot.setAttribute("data-ad-format", "auto");
+    adSlot.setAttribute("data-full-width-responsive", "true");
+    let hasShown = false;
+    const observer = new MutationObserver(() => {
+      if (!containerRef.current) return;
+      const hasAdContent = Array.from(containerRef.current.querySelectorAll(".adsbygoogle")).some((ad) => {
+        return ad.childElementCount > 0 || ad.innerHTML.trim().length > 0;
+      });
+      if (hasAdContent) {
+        hasShown = true;
+        setVisible(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(container, { childList: true, subtree: true });
+    container.appendChild(adSlot);
+    const pushAd = () => {
+      const w = window;
+      w.adsbygoogle = w.adsbygoogle || [];
+      try {
+        w.adsbygoogle.push({});
+      } catch {
+      }
+    };
+    pushAd();
+    const timeout = window.setTimeout(() => {
+      if (!hasShown && container.contains(adSlot)) {
+        container.removeChild(adSlot);
+      }
+    }, 5e3);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeout);
+      if (container.contains(adSlot)) {
+        container.removeChild(adSlot);
+      }
+    };
+  }, []);
+  return /* @__PURE__ */ jsx(
+    "div",
+    {
+      className: "ad-slot w-full sticky bottom-0 z-30",
+      ref: containerRef,
+      style: visible ? { minHeight: "60px" } : { minHeight: 0, display: "none" }
+    }
+  );
+}
+const Route$c = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -49,7 +127,8 @@ const toolLinks = [
   { to: "/dashboard", label: "IP Dashboard", icon: Globe },
   { to: "/vpn-checker", label: "VPN Checker", icon: Shield },
   { to: "/speed-test", label: "Speed Test", icon: Zap },
-  { to: "/dns-leak", label: "DNS Leak Test", icon: Wifi }
+  { to: "/dns-leak", label: "DNS Leak Test", icon: Wifi },
+  { to: "/location-generator", label: "Location Generator", icon: MapPin }
 ];
 const seoLinks = [
   { to: "/what-is-ip-address", label: "What is an IP?", icon: BookOpen },
@@ -151,7 +230,7 @@ function RootLayout() {
       ] }),
       /* @__PURE__ */ jsx(TopBannerAd, {}),
       /* @__PURE__ */ jsx("main", { className: "flex-1 overflow-auto", children: /* @__PURE__ */ jsx(Outlet, {}) }),
-      /* @__PURE__ */ jsx("div", { className: "ad-slot w-full sticky bottom-0 z-30", style: { minHeight: "60px" }, children: /* @__PURE__ */ jsx("span", { children: "Advertisement · 728×60" }) })
+      /* @__PURE__ */ jsx(BottomStickyAd, {})
     ] })
   ] });
 }
@@ -184,7 +263,7 @@ function RootDocument({ children }) {
     ] })
   ] });
 }
-const Route$a = createFileRoute("/what-is-ip-address")({
+const Route$b = createFileRoute("/what-is-ip-address")({
   head: () => ({
     meta: [
       { title: "What is an IP Address? Complete Guide 2025 | NetWho" },
@@ -437,7 +516,7 @@ function WhatIsIp() {
     ] })
   ] });
 }
-const Route$9 = createFileRoute("/vpn-explained")({
+const Route$a = createFileRoute("/vpn-explained")({
   head: () => ({
     meta: [
       { title: "What is a VPN and How Does It Work? Complete Guide 2025 | NetWho" },
@@ -635,7 +714,7 @@ function VpnExplained() {
     ] })
   ] });
 }
-const Route$8 = createFileRoute("/vpn-checker")({
+const Route$9 = createFileRoute("/vpn-checker")({
   head: () => ({
     meta: [
       { title: "VPN & Proxy Detector – Check If Your VPN Is Working | NetWho" },
@@ -703,13 +782,6 @@ function VpnChecker() {
       setLoading(false);
     }
   }
-  const riskColorMap = {
-    "Low Risk": "#00ff88",
-    "Medium Risk": "#ff9f00",
-    "High Risk": "#ff6b35",
-    Dangerous: "#ff2d55"
-  };
-  data ? riskColorMap[data.riskLevel] || "#00d4ff" : "#00d4ff";
   return /* @__PURE__ */ jsxs("div", { className: "page-transition p-4 lg:p-6 max-w-4xl mx-auto", children: [
     /* @__PURE__ */ jsxs("div", { className: "mb-6", children: [
       /* @__PURE__ */ jsxs("h1", { className: "text-2xl lg:text-3xl font-bold text-white", children: [
@@ -843,7 +915,7 @@ function VpnChecker() {
     ] })
   ] });
 }
-const Route$7 = createFileRoute("/speed-test")({
+const Route$8 = createFileRoute("/speed-test")({
   head: () => ({
     meta: [
       { title: "Internet Speed Test – Check Download, Upload & Ping | NetWho" },
@@ -1098,7 +1170,7 @@ function SpeedTest() {
     ] })
   ] });
 }
-const Route$6 = createFileRoute("/online-privacy-guide")({
+const Route$7 = createFileRoute("/online-privacy-guide")({
   head: () => ({
     meta: [
       { title: "Online Privacy & Cybersecurity Guide 2025 – Stay Anonymous Online | NetWho" },
@@ -1260,6 +1332,18 @@ function OnlinePrivacyGuide() {
     ] })
   ] });
 }
+const $$splitComponentImporter = () => import("./location-generator-C9Njx0ea.js");
+const Route$6 = createFileRoute("/location-generator")({
+  head: () => ({
+    meta: [{
+      title: "Location Generator – Random Address Generator | NetWho"
+    }, {
+      name: "description",
+      content: "Generate realistic random addresses, postal codes, cities, and regions with a fast location generator. Perfect for testing forms, design mockups, and SEO-focused location tools."
+    }]
+  }),
+  component: lazyRouteComponent($$splitComponentImporter, "component")
+});
 const Route$5 = createFileRoute("/internet-speed-guide")({
   head: () => ({
     meta: [
@@ -1778,22 +1862,47 @@ function DnsLeak() {
 }
 function SidebarAd() {
   const containerRef = useRef(null);
-  const scriptLoadedRef = useRef(false);
+  const scriptRef = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    if (scriptLoadedRef.current || !containerRef.current) return;
-    scriptLoadedRef.current = true;
+    if (!containerRef.current) return;
     const script = document.createElement("script");
+    scriptRef.current = script;
     script.src = "https://pl29481526.effectivecpmnetwork.com/80/6b/f4/806bf445469727f60c03a49d7bcc637b.js";
     script.async = true;
     script.type = "text/javascript";
+    script.dataset.adSlot = "sidebar";
+    const observer = new MutationObserver(() => {
+      if (!containerRef.current) return;
+      const hasContent = Array.from(containerRef.current.children).some((n) => n !== script);
+      if (hasContent) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(containerRef.current, { childList: true, subtree: true });
     containerRef.current.appendChild(script);
+    const timeout = setTimeout(() => {
+      if (!visible && containerRef.current && scriptRef.current && containerRef.current.contains(scriptRef.current)) {
+        containerRef.current.removeChild(scriptRef.current);
+      }
+    }, 3e3);
     return () => {
-      if (containerRef.current && containerRef.current.contains(script)) {
-        containerRef.current.removeChild(script);
+      observer.disconnect();
+      clearTimeout(timeout);
+      if (scriptRef.current && containerRef.current?.contains(scriptRef.current)) {
+        containerRef.current.removeChild(scriptRef.current);
       }
     };
   }, []);
-  return /* @__PURE__ */ jsx("div", { className: "ad-slot rounded-xl", ref: containerRef, style: { minHeight: "250px" } });
+  return /* @__PURE__ */ jsx(
+    "div",
+    {
+      className: "ad-slot rounded-xl",
+      ref: containerRef,
+      style: visible ? { minHeight: "250px" } : { minHeight: 0, display: "none" }
+    }
+  );
 }
 const Route$2 = createFileRoute("/dashboard")({
   head: () => ({
@@ -2265,60 +2374,65 @@ function parseUserAgent(ua) {
   else if (ua.includes("iPad") || ua.includes("Tablet")) device = "Tablet";
   return { browser, os, device };
 }
-const WhatIsIpAddressRoute = Route$a.update({
+const WhatIsIpAddressRoute = Route$b.update({
   id: "/what-is-ip-address",
   path: "/what-is-ip-address",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
-const VpnExplainedRoute = Route$9.update({
+const VpnExplainedRoute = Route$a.update({
   id: "/vpn-explained",
   path: "/vpn-explained",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
-const VpnCheckerRoute = Route$8.update({
+const VpnCheckerRoute = Route$9.update({
   id: "/vpn-checker",
   path: "/vpn-checker",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
-const SpeedTestRoute = Route$7.update({
+const SpeedTestRoute = Route$8.update({
   id: "/speed-test",
   path: "/speed-test",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
-const OnlinePrivacyGuideRoute = Route$6.update({
+const OnlinePrivacyGuideRoute = Route$7.update({
   id: "/online-privacy-guide",
   path: "/online-privacy-guide",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
+});
+const LocationGeneratorRoute = Route$6.update({
+  id: "/location-generator",
+  path: "/location-generator",
+  getParentRoute: () => Route$c
 });
 const InternetSpeedGuideRoute = Route$5.update({
   id: "/internet-speed-guide",
   path: "/internet-speed-guide",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const DnsLeakExplainedRoute = Route$4.update({
   id: "/dns-leak-explained",
   path: "/dns-leak-explained",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const DnsLeakRoute = Route$3.update({
   id: "/dns-leak",
   path: "/dns-leak",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const DashboardRoute = Route$2.update({
   id: "/dashboard",
   path: "/dashboard",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const IndexRoute = Route$1.update({
   id: "/",
   path: "/",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const ApiIpRoute = Route.update({
   id: "/api/ip",
   path: "/api/ip",
-  getParentRoute: () => Route$b
+  getParentRoute: () => Route$c
 });
 const rootRouteChildren = {
   IndexRoute,
@@ -2326,6 +2440,7 @@ const rootRouteChildren = {
   DnsLeakRoute,
   DnsLeakExplainedRoute,
   InternetSpeedGuideRoute,
+  LocationGeneratorRoute,
   OnlinePrivacyGuideRoute,
   SpeedTestRoute,
   VpnCheckerRoute,
@@ -2333,7 +2448,7 @@ const rootRouteChildren = {
   WhatIsIpAddressRoute,
   ApiIpRoute
 };
-const routeTree = Route$b._addFileChildren(rootRouteChildren)._addFileTypes();
+const routeTree = Route$c._addFileChildren(rootRouteChildren)._addFileTypes();
 const getRouter = () => {
   const router = createRouter({
     routeTree,

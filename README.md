@@ -9,6 +9,7 @@ NetWho is a free, full-stack IP intelligence and network analysis tool built on 
 - **VPN / Proxy Checker** – Detects HTTP proxies, datacenter hosting IPs, and VPN usage with a visual score gauge and risk level badge
 - **Speed Test** – Animated download, upload, and ping latency test with quality ratings
 - **DNS Leak Test** – Checks whether your VPN is leaking DNS queries to your ISP
+- **Location Generator** – Creates realistic random countries, cities, states, postal codes, and full addresses for test data and SEO content
 
 ### SEO Content Pages
 - What is an IP Address?
@@ -52,6 +53,7 @@ npm run build      # Production build
 | `/dns-leak-explained` | SEO guide |
 | `/internet-speed-guide` | SEO guide |
 | `/online-privacy-guide` | SEO guide |
+| `/location-generator` | Location generator tool for random addresses, postal codes, and countries |
 | `/api/ip` | JSON API endpoint returning full IP intelligence |
 
 ## API

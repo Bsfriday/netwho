@@ -100,13 +100,7 @@ export default function VpnChecker() {
     }
   }
 
-  const riskColorMap: Record<string, string> = {
-    'Low Risk': '#00ff88',
-    'Medium Risk': '#ff9f00',
-    'High Risk': '#ff6b35',
-    Dangerous: '#ff2d55',
-  }
-  const riskColor = data ? (riskColorMap[data.riskLevel] || '#00d4ff') : '#00d4ff'
+  // ScoreBar derives colors from `riskLevel`.
 
   return (
     <div className="page-transition p-4 lg:p-6 max-w-4xl mx-auto">

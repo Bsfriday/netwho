@@ -14,6 +14,7 @@ import { Route as VpnExplainedRouteImport } from './routes/vpn-explained'
 import { Route as VpnCheckerRouteImport } from './routes/vpn-checker'
 import { Route as SpeedTestRouteImport } from './routes/speed-test'
 import { Route as OnlinePrivacyGuideRouteImport } from './routes/online-privacy-guide'
+import { Route as LocationGeneratorRouteImport } from './routes/location-generator'
 import { Route as InternetSpeedGuideRouteImport } from './routes/internet-speed-guide'
 import { Route as DnsLeakExplainedRouteImport } from './routes/dns-leak-explained'
 import { Route as DnsLeakRouteImport } from './routes/dns-leak'
@@ -44,6 +45,11 @@ const SpeedTestRoute = SpeedTestRouteImport.update({
 const OnlinePrivacyGuideRoute = OnlinePrivacyGuideRouteImport.update({
   id: '/online-privacy-guide',
   path: '/online-privacy-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationGeneratorRoute = LocationGeneratorRouteImport.update({
+  id: '/location-generator',
+  path: '/location-generator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InternetSpeedGuideRoute = InternetSpeedGuideRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/dns-leak': typeof DnsLeakRoute
   '/dns-leak-explained': typeof DnsLeakExplainedRoute
   '/internet-speed-guide': typeof InternetSpeedGuideRoute
+  '/location-generator': typeof LocationGeneratorRoute
   '/online-privacy-guide': typeof OnlinePrivacyGuideRoute
   '/speed-test': typeof SpeedTestRoute
   '/vpn-checker': typeof VpnCheckerRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/dns-leak': typeof DnsLeakRoute
   '/dns-leak-explained': typeof DnsLeakExplainedRoute
   '/internet-speed-guide': typeof InternetSpeedGuideRoute
+  '/location-generator': typeof LocationGeneratorRoute
   '/online-privacy-guide': typeof OnlinePrivacyGuideRoute
   '/speed-test': typeof SpeedTestRoute
   '/vpn-checker': typeof VpnCheckerRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/dns-leak': typeof DnsLeakRoute
   '/dns-leak-explained': typeof DnsLeakExplainedRoute
   '/internet-speed-guide': typeof InternetSpeedGuideRoute
+  '/location-generator': typeof LocationGeneratorRoute
   '/online-privacy-guide': typeof OnlinePrivacyGuideRoute
   '/speed-test': typeof SpeedTestRoute
   '/vpn-checker': typeof VpnCheckerRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/dns-leak'
     | '/dns-leak-explained'
     | '/internet-speed-guide'
+    | '/location-generator'
     | '/online-privacy-guide'
     | '/speed-test'
     | '/vpn-checker'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/dns-leak'
     | '/dns-leak-explained'
     | '/internet-speed-guide'
+    | '/location-generator'
     | '/online-privacy-guide'
     | '/speed-test'
     | '/vpn-checker'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/dns-leak'
     | '/dns-leak-explained'
     | '/internet-speed-guide'
+    | '/location-generator'
     | '/online-privacy-guide'
     | '/speed-test'
     | '/vpn-checker'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   DnsLeakRoute: typeof DnsLeakRoute
   DnsLeakExplainedRoute: typeof DnsLeakExplainedRoute
   InternetSpeedGuideRoute: typeof InternetSpeedGuideRoute
+  LocationGeneratorRoute: typeof LocationGeneratorRoute
   OnlinePrivacyGuideRoute: typeof OnlinePrivacyGuideRoute
   SpeedTestRoute: typeof SpeedTestRoute
   VpnCheckerRoute: typeof VpnCheckerRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/online-privacy-guide'
       fullPath: '/online-privacy-guide'
       preLoaderRoute: typeof OnlinePrivacyGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/location-generator': {
+      id: '/location-generator'
+      path: '/location-generator'
+      fullPath: '/location-generator'
+      preLoaderRoute: typeof LocationGeneratorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/internet-speed-guide': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   DnsLeakRoute: DnsLeakRoute,
   DnsLeakExplainedRoute: DnsLeakExplainedRoute,
   InternetSpeedGuideRoute: InternetSpeedGuideRoute,
+  LocationGeneratorRoute: LocationGeneratorRoute,
   OnlinePrivacyGuideRoute: OnlinePrivacyGuideRoute,
   SpeedTestRoute: SpeedTestRoute,
   VpnCheckerRoute: VpnCheckerRoute,
